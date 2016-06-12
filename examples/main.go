@@ -1,13 +1,24 @@
-# isottope
-Is an Event Loop for [otto](https://github.com/robertkrimen/otto) JavaScript engine, which itself is written in pure Go(ld).
+package main
 
-Three JavaScript functions added; **subscribe**, **unsubscribe** and **emit**. Events can get triggered from inside both JavaScript and Go.
+import (
+	"dc0d-github/isottope"
+	"time"
 
-Not used heavily yet (just in one side project of mine), so any bug report is most appreciated.
+	"github.com/robertkrimen/otto"
+)
 
-From *examples* directory; you can define your own events and fire them, like this:
+func main() {
+	vm := otto.New()
+	loop := isottope.Init(vm)
 
-```go
+	timer(vm)
+	customEvent(vm, loop)
+
+	//the timer itself is implemented using isottope.Event interface
+
+	<-time.After(time.Second * 5)
+}
+
 func customEvent(vm *otto.Otto, loop *isottope.EventLoop) {
 	loop.RegisterEvent(isottope.SimpleEvent(`TEST_OK`), true)
 
@@ -32,11 +43,7 @@ func customEvent(vm *otto.Otto, loop *isottope.EventLoop) {
 	loop.Emit(`TEST_OK`, `Another Custome Arg`)
 	loop.Emit(`TEST_OK`)
 }
-```
 
-Using timers is also possible; for example:
-
-```go
 func timer(vm *otto.Otto) {
 	vm.Run(`
 		var R = {};
@@ -58,6 +65,3 @@ func timer(vm *otto.Otto) {
 		}		
 	`)
 }
-```
-
-It's possible to implement more complicated event patterns by implementing `isottope.Event` interface - the timer itself is implemented using `isottope.Event` interface.

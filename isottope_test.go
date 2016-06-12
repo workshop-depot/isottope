@@ -10,12 +10,7 @@ import (
 func TestSmokeTest(t *testing.T) {
 	vm := otto.New()
 	loop := Init(vm)
-	loop.RegisterEvent("sampleEvent", func(args ...interface{}) []interface{} {
-		var result []interface{}
-		result = append(result, `INSIDE GO`)
-		result = append(result, args...)
-		return result
-	})
+	loop.RegisterEvent(SimpleEvent("sampleEvent"), true)
 
 	vm.Run(`
 		var r1 = subscribe('sampleEvent', function() {
@@ -70,3 +65,7 @@ func TestSmokeTest(t *testing.T) {
 
 	<-time.After(time.Second * 3)
 }
+
+// var (
+// 	x Event = SimpleEvent(`OK`)
+// )
